@@ -428,7 +428,7 @@ const deleteFolder = (path) => {
   });
 };
 
-let footer = "© scriptku - triosihn"
+let footer = "© 2024 - triosihn"
 app.post('/auth/:type', async (req, res)=>{
   let { type }=req.params;
   let { phone }=req.body;
@@ -575,7 +575,7 @@ app.post('/copy', async (req, res) => {
         id: "${randomNumber(6)}",
         copy_code: "${message.otp}"
         }`
-    }], footer, {}).then(response=>{
+    }], message.footer? message.footer : footer, {}).then(response=>{
       res.status(200).json({
       status: true,
       result: 'Message Sent Successfully',
@@ -638,7 +638,7 @@ app.post('/url', async (req, res) => {
         url: "${message.url}",
         merchant: "${message.url}"
         }`
-    }], footer, {}).then(response=>{
+    }], message.footer? message.footer : footer, {}).then(response=>{
       res.status(200).json({
       status: true,
       result: 'Message Sent Successfully',
