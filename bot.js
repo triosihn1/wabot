@@ -267,6 +267,7 @@ console.log(e)
         
         server('status', numberBot, "OFFLINE").then(response =>{
             fs.rmSync(session, { recursive: true, force: true });
+            sock = null;
             server('log', numberBot, { "code":reason,"connection": connection, "message": "Bot Keluar Dari Device"})
             starts();
         }).catch(error =>{
