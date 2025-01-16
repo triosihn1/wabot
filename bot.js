@@ -475,6 +475,8 @@ app.post('/auth/:type', async (req, res)=>{
       case 'reset':
         deleteFolder(session)
   .then((message) => {
+    sock = null;
+    starts();
     res.status(200).json({ status :  true, result : message})
   })
   .catch((err) => {
