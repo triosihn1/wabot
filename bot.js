@@ -416,6 +416,17 @@ fs.watchFile(file, () => {
 /* 
     [ ROUTER NYA DI BAWAH ]
 */
+const deleteFolder = (path) => {
+  return new Promise((resolve, reject) => {
+    try {
+      fs.rmSync(path, { recursive: true, force: true });
+      resolve('Folder session berhasil dihapus.');
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 let footer = "© scriptku - triosihn"
 app.post('/auth/:type', async (req, res)=>{
   let { type }=req.params;
@@ -460,6 +471,15 @@ app.post('/auth/:type', async (req, res)=>{
         })
           
         }
+        break;
+      case 'reset':
+        deleteFolder(session)
+  .then((message) => {
+    res.status(200).json({ status :  true, result : message})
+  })
+  .catch((err) => {
+    res.status(400).json({status : false, result:err.message})
+  });
         break;
       default:
         res.status(500).json({status:false, result:"Type Not Handeling"});
