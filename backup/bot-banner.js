@@ -19,14 +19,13 @@ const PhoneNumber = require('awesome-phonenumber');
 const express = require('express');
 const cors = require('cors');
 const path = require('path')
-const { formatPhoneNumber, randomNumber, cleanString, centerText, lineText } = require('./lib/function');
-const { server } = require('./lib/server');
-const { error } = require('console');
+const {  formatPhoneNumber, randomNumber, cleanString, centerText, lineText }=require('./lib/function');
+const { server }=require('./lib/server')
 //const { starts }=require('./lib/wa');
 const app = express();
 
 //Banner
-const banner = `
+const banner =`
 
 
     ███████╗ ██████╗██████╗ ██╗██████╗ ████████╗██╗  ██╗██╗   ██╗    
@@ -95,9 +94,9 @@ async function starts() {
           ? mek.message.ephemeralMessage.message
           : mek.message;
       if (mek.key && mek.key.remoteJid === 'status@broadcast') return;
-
+      
       m = smsg(sock, mek, store);
-      if (m.isBot) return;
+     if (m.isBot) return;
       const { type, quotedMsg, mentioned, now, fromMe } = m;
       var body =
         m.mtype === 'conversation'
@@ -112,14 +111,14 @@ async function starts() {
                   ? m.message.buttonsResponseMessage.selectedButtonId
                   : m.mtype == 'listResponseMessage'
                     ? m.message.listResponseMessage.singleSelectReply
-                      .selectedRowId
+                        .selectedRowId
                     : m.mtype == 'templateButtonReplyMessage'
                       ? m.message.templateButtonReplyMessage.selectedId
                       : m.mtype === 'messageContextInfo'
                         ? m.message.buttonsResponseMessage?.selectedButtonId ||
-                        m.message.listResponseMessage?.singleSelectReply
-                          .selectedRowId ||
-                        m.text
+                          m.message.listResponseMessage?.singleSelectReply
+                            .selectedRowId ||
+                          m.text
                         : '';
       var budy = typeof m.text == 'string' ? m.text : '';
       global.prefa = [''];
@@ -143,7 +142,7 @@ async function starts() {
       const senderNumber = sender.split('@')[0];
       const quoted = (q = m.quoted ? m.quoted : m);
       const groupMetadata = m.isGroup
-        ? await sock.groupMetadata(m.chat).catch((e) => { })
+        ? await sock.groupMetadata(m.chat).catch((e) => {})
         : '';
       const groupName = m.isGroup ? groupMetadata.subject : '';
       const participants = m.isGroup ? await groupMetadata.participants : '';
@@ -166,15 +165,15 @@ async function starts() {
         );
       }
       switch (command) {
-        case 'ping':
-          reply('pong')
-          break
+      case 'ping':
+      reply('pong')
+      break
         default:
-      }
-    } catch (e) {
-      console.log(e)
-    }
-  });
+  }
+} catch (e) {
+console.log(e)
+}
+});
 
   sock.decodeJid = (jid) => {
     if (!jid) return jid;
@@ -187,9 +186,9 @@ async function starts() {
     } else return jid;
   };
   sock.sendText = (jid, text, quoted = '', options) => {
-    return sock.sendMessage(jid, { text: text, ...options }, { quoted });
-
-  }
+  return sock.sendMessage(jid, { text: text, ...options }, { quoted });
+  
+}
   sock.downloadMediaMessage = async (message) => {
     let mime = (message.msg || message).mimetype || '';
     let messageType = message.mtype
@@ -205,48 +204,48 @@ async function starts() {
   // send button 
   sock.sendButton = async (jid, text, row = [], footer, opts = {}) => {
     async function createImage(url) {
-      const { imageMessage } = await generateWAMessageContent(
-        { image: { url } },
-        { upload: sock.waUploadToServer }
-      );
-      return imageMessage;
+        const { imageMessage } = await generateWAMessageContent(
+            { image: { url } },
+            { upload: sock.waUploadToServer }
+        );
+        return imageMessage;
     }
 
     let header = null;
 
     if (opts.thumbnail) {
-      const imageMessage = await createImage(opts.thumbnail);
-      header = proto.Message.InteractiveMessage.Header.create({
-        title: opts.header || "",
-        hasMediaAttachment: true,
-        imageMessage: imageMessage,
-      });
+        const imageMessage = await createImage(opts.thumbnail);
+        header = proto.Message.InteractiveMessage.Header.create({
+            title: opts.header || "",
+            hasMediaAttachment: true,
+            imageMessage: imageMessage,
+        });
     }
 
     let msg = generateWAMessageFromContent(jid, {
-      viewOnceMessage: {
-        message: {
-          interactiveMessage: proto.Message.InteractiveMessage.create({
-            body: proto.Message.InteractiveMessage.Body.create({
-              text: text,
-            }),
-            footer: proto.Message.InteractiveMessage.Footer.create({
-              text: footer,
-            }),
-            header: header,
-            nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
-              buttons: [...row],
-            }),
-          }),
+        viewOnceMessage: {
+            message: {
+                interactiveMessage: proto.Message.InteractiveMessage.create({
+                    body: proto.Message.InteractiveMessage.Body.create({
+                        text: text,
+                    }),
+                    footer: proto.Message.InteractiveMessage.Footer.create({
+                        text: footer,
+                    }),
+                    header: header, 
+                    nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+                        buttons: [...row],
+                    }),
+                }),
+            },
         },
-      },
     }, {});
 
     sock.relayMessage(jid, msg.message, {
-      messageId: msg.key.id,
+        messageId: msg.key.id,
     });
     return msg;
-  };
+};
 
 
   sock.serializeM = (m) => smsg(sock, m, store);
@@ -265,44 +264,28 @@ async function starts() {
         starts();
       } else if (reason === DisconnectReason.loggedOut) {
         //delete isi folder session
-        server('status', numberBot, "OFFLINE").then(response => {
-          fs.rmSync(session, { recursive: true, force: true });
-          sock = null;
-          server('log', numberBot, ({
-            "level": "info",
-            "message": "Bot Log Out",
-            "stack": "No Stack Trace Available",
-            "meta": {
-              "code": reason,
-              "connection": connection
-            }
-          }))
-          numberBot = '';
-          starts();
-        }).catch(error => {
+        
+        server('status', numberBot, "OFFLINE").then(response =>{
+            fs.rmSync(session, { recursive: true, force: true });
+            sock = null;
+            server('log', numberBot, { "code":reason,"connection": connection, "message": "Bot Keluar Dari Device"})
+            starts();
+        }).catch(error =>{
           console.error(`[ \x1b[1;33m\x1b[1mSERVER\x1b[0m ][ \x1b[0;31mERROR\x1b[0m ][ \x1b[0;35m${error.message}\x1b[0m ]`);
         })
       } else {
         sock.end(`Unknown DisconnectReason: ${reason}|${connection}`);
-        server('log', numberBot, ({
-          "level": "critical",
-          "message": "Unknown DisconnectReason",
-          "stack": "No Stack Trace Available",
-          "meta": {
-            "code": reason,
-            "connection": connection
-          }
-        }))
+        server('log', numberBot, { "code" : reason, "connection": connection, "message": "Unknown DisconnectReason"})
       }
     } else if (connection === 'open') {
       numberBot = cleanString(JSON.stringify(sock.user.id, null, 2));
       lineText();
-      server('status', numberBot, 'ONLINE').then(response => {
-        if (isOpen !== true) {
-          //connectOpen(numberBot);
-          isOpen = true;
-        }
-      }).catch(error => {
+      server('status', numberBot, 'ONLINE').then( response =>{
+          if(isOpen !== true){
+        //connectOpen(numberBot);
+        isOpen = true;
+      }
+      }).catch(error =>{
         console.error(`[ \x1b[1;33m\x1b[1mSERVER\x1b[0m ][ \x1b[0;31mERROR\x1b[0m ][ \x1b[0;35m${error.message}\x1b[0m ]`);
       })
     }
@@ -326,10 +309,10 @@ function smsg(sock, m, store) {
     m.isGroup = m.chat.endsWith('@g.us');
     m.sender = sock.decodeJid(
       (m.fromMe && sock.user.id) ||
-      m.participant ||
-      m.key.participant ||
-      m.chat ||
-      '',
+        m.participant ||
+        m.key.participant ||
+        m.chat ||
+        '',
     );
     if (m.isGroup) m.participant = sock.decodeJid(m.key.participant) || '';
   }
@@ -446,215 +429,334 @@ const deleteFolder = (path) => {
 };
 
 let footer = "© 2024 - triosihn"
-app.post('/auth/:type', async (req, res) => {
-  let { type } = req.params;
-  let { phone } = req.body;
-
-  try {
-    switch (type) {
+app.post('/auth/:type', async (req, res)=>{
+  let { type }=req.params;
+  let { phone }=req.body;
+  
+  try{
+    switch(type){
       case 'qr':
-        res.status(400).json({ status: false, result: "Sorry Metode QR Not Found" });
+        res.status(400).json({ status:false, result:"Sorry Metode QR Not Found"});
         break;
       case 'code':
         //phone = phone+"@s.whatsapp.net"
-        if (!sock?.authState?.creds?.registered) {
+        if(!sock?.authState?.creds?.registered){
           // let code = await sock.requestPairingCode(phone)
           await sock.requestPairingCode(phone).then(response => {
-            res.status(200).json({ status: true, result: response })
+              res.status(200).json({ status : true, result : response})
           }).catch(er => {
-            res.status(400).json({
-              status: false, result: 'Error Sending Code Pairing',
-              detail: {
-                message: er.message || 'Unknown error',
-                stack: er.stack || 'No stack trace available',
-              }
-            })
+            res.status(400).json({ status : false, result: 'Error Sending Code Pairing',
+      detail: {
+        message: er.message || 'Unknown error',
+        stack: er.stack || 'No stack trace available',
+      }})
           })
-
-        } else {
-          server('reset', phone).then(response => {
-            if (response.status === false) {
-              res.status(500).json({ status: false, result: "Bot Sudah Terhubung..." });
-            } else {
+          
+        }else{
+          server('reset',phone).then( response=>{
+            if(response.status === false){
+              res.status(500).json({status:false, result:"Bot Sudah Terhubung..."});
+            }else{
               sock.requestPairingCode(phone).then(response => {
-                res.status(200).json({ status: true, result: response })
-              }).catch(er => {
-                res.status(400).json({
-                  status: false, result: 'Error Sending Code Pairing',
-                  detail: {
-                    message: er.message || 'Unknown error',
-                    stack: er.stack || 'No stack trace available',
-                  }
-                })
-              })
-            }
-          }).catch(error => {
-            res.status(500).json({ status: false, result: error.message, stack: error.stack, detail: error });
-            console.error(`[ \x1b[1;33m\x1b[1mREGISTER\x1b[0m ][ \x1b[0;31mERROR\x1b[0m ][ \x1b[0;35m${error.message}\x1b[0m ]`);
+              res.status(200).json({ status : true, result : response})
+          }).catch(er => {
+            res.status(400).json({ status : false, result: 'Error Sending Code Pairing',
+      detail: {
+        message: er.message || 'Unknown error',
+        stack: er.stack || 'No stack trace available',
+      }})
           })
-
+            }
+        }).catch(error =>{
+          console.error(`[ \x1b[1;33m\x1b[1mREGISTER\x1b[0m ][ \x1b[0;31mERROR\x1b[0m ][ \x1b[0;35m${error.message}\x1b[0m ]`);
+        })
+          
         }
         break;
       case 'reset':
         deleteFolder(session)
-          .then((message) => {
-            sock = null;
-            starts();
-            res.status(200).json({ status: true, result: message })
-          })
-          .catch((err) => {
-            res.status(400).json({ status: false, result: err.message, stack: error.stack, detail: error })
-          });
+  .then((message) => {
+    sock = null;
+    starts();
+    res.status(200).json({ status :  true, result : message})
+  })
+  .catch((err) => {
+    res.status(400).json({status : false, result:err.message})
+  });
         break;
       default:
-        res.status(500).json({ status: false, result: "Type Not Handeling" });
+        res.status(500).json({status:false, result:"Type Not Handeling"});
         break;
     }
-  } catch (error) {
-    res.status(500).json({ status: false, result: error.message, stack: error.stack, detail: error });
+  }catch(e){
+    res.status(500).json({status:false, result:"Internal Server Error", detail: e});
   }
 });
-
-/**
- * API SEND MESSAGE
- */
-app.post('/sendmessage', async (req, res) => {
+app.post('/sendMessage/text', async (req, res) => {
   let { phone, message } = req.body;
-  //Validasi Koneksi sock apakah ada atau tidak
+  // Validasi koneksi sock
   if (!sock) {
-    return res.status(500).json({ status: false, result: "Bot Server Belum Terhubung Ke WhatsApp" });
+    return res.status(500).json({
+      status: false,
+      result: "Bot Server Belum Terhubung Ke WhatsApp"
+    });
   }
-  if (!phone || !message || !message.action || !message.text) {
-    return res.status(400).json({ satus: false, result: 'Required parameters are missing.' });
-  }
-  //Format nomor telepon, tambahkan @s.whatsapp.net
+  // Validasi parameter
+  if (!phone || !message || !message.text) {
+  return res.status(400).json({
+    status: false,
+    result: 'Required parameters are missing.'
+  });
+}
+
+  // Format nomor telepon
   phone = formatPhoneNumber(phone);
+  //phone = phone+'@s.whatsapp.net'
   try {
-    switch (message.action) {
-      case 'text':
-        await sock.sendText(phone, message.text).then(response => {
-          res.status(200).json({
-            status: true,
-            result: 'Message Sent Successfully',
-            logs: response
-          });
-        }).catch(error => {
-          res.status(500).json({ status: false, result: 'Error Sending Message' });
-          server('log', numberBot, ({
-            "level": "error",
-            "message": error.message || "Unknown Error",
-            "stack": error.stack || "No Stack Trace Available",
-            "meta": {
-              "service": "sendMessage",
-              "endpoint": `/sendMessage/${message.action}`
-            }
-          }))
-        })
-        break;
-      case 'copy':
-        if (!message.copy) {
-          return res.status(400).json({ satus: false, result: 'Required parameters are missing.' });
-        }
-        await sock.sendButton(phone, message.text, [{
-          "name": "cta_copy",
-          "buttonParamsJson": `{
-              display_text: "${message.display? message.display : 'Copy code'}",
-              id: "${randomNumber(6)}",
-              copy_code: "${message.copy}"
-              }`
-        }], message.footer ? message.footer : footer, {}).then(response => {
-          res.status(200).json({
-            status: true,
-            result: 'Message Sent Successfully',
-            logs: response
-          });
-        }).catch(error => {
-          res.status(500).json({ status: false, result: 'Error Sending Message' });
-          server('log', numberBot, ({
-            "level": "error",
-            "message": error.message || "Unknown Error",
-            "stack": error.stack || "No Stack Trace Available",
-            "meta": {
-              "service": "sendMessage",
-              "endpoint": `/sendMessage/${message.action}`
-            }
-          }));
-        });
-        break;
-      case 'url':
-        if (!message.url) {
-          return res.status(400).json({ satus: false, result: 'Required parameters are missing.' });
-        }
-        await sock.sendButton(phone, message.text, [{
-          "name": "cta_url",
-          "buttonParamsJson": `{
-          display_text: "${message.display? message.display : 'Preview'}",
-          url: "${message.url}",
-          merchant: "${message.url}"
-          }`
-        }], message.footer ? message.footer : footer, {}).then(response => {
-          res.status(200).json({
-            status: true,
-            result: 'Message Sent Successfully',
-            logs: response
-          });
-        }).catch(error => {
-          res.status(500).json({ status: false, result: 'Error Sending Message' });
-          server('log', numberBot, ({
-            "level": "error",
-            "message": error.message || "Unknown Error",
-            "stack": error.stack || "No Stack Trace Available",
-            "meta": {
-              "service": "sendMessage",
-              "endpoint": `/sendMessage/${message.action}`
-            }
-          }));
-        })
-        break;
-      case 'image':
-        await sock.sendButton(phone, message.text, [{
-          "name": "cta_url",
-          "buttonParamsJson": `{
-          display_text: "${message.display? message.display : 'Preview'}",
-          url: "${message.url}",
-          merchant: "${message.url}"
-          }`
-        }], message.footer ? message.footer : footer, { header: message.header?message.header : '', thumbnail: message.image }).then(response => {
-          res.status(200).json({
-            status: true,
-            result: 'Message Sent Successfully',
-            logs: response
-          });
-        }).catch(error => {
-          res.status(500).json({ status: false, result: 'Error Sending Message' });
-          server('log', numberBot, ({
-            "level": "error",
-            "message": error.message || "Unknown Error",
-            "stack": error.stack || "No Stack Trace Available",
-            "meta": {
-              "service": "sendMessage",
-              "endpoint": `/sendMessage/${message.action}`
-            }
-          }));
-        });
-        break;
-      default:
-        res.status(500).json({ status: false, result: "Action Not Handeling" });
-        break;
-    }
-  } catch (error) {
-    res.status(500).json({ status: false, result: 'Internal Server Error' });
-    server('log', numberBot, ({
-      "level": "error",
-      "message": error.message || "Unknown Error",
-      "stack": error.stack || "No Stack Trace Available",
-      "meta": {
-        "service": "sendMessage",
-        "endpoint": `/sendMessage/${message.action}`
+    // Kirim pesan melalui sock
+    await sock.sendText(phone, message.text).then(response =>{
+      res.status(200).json({
+      status: true,
+      result: 'Message Sent Successfully',
+      logs: response
+    });
+    }).catch(e =>{
+      res.status(500).json({
+      status: false,
+      result: 'Error Send Message Text',
+      detail: {
+        message: e.message || 'Unknown error',
+        stack: e.stack || 'No stack trace available',
       }
-    }))
+    });
+    })
+  } catch (e) {
+    // Log error ke console untuk debugging
+    console.error("Error sending message:", e);
+
+    // Kirim detail error ke response
+    res.status(500).json({
+      status: false,
+      result: 'Internal Server Error',
+      detail: {
+        message: e.message || 'Unknown error',
+        stack: e.stack || 'No stack trace available',
+      }
+    });
   }
 });
+app.post('/sendMessage/copy', async (req, res) => {
+  let { phone, message } = req.body;
+  // Validasi koneksi sock
+  if (!sock) {
+    return res.status(500).json({
+      status: false,
+      result: "Bot Server Belum Terhubung Ke WhatsApp"
+    });
+  }
+  // Validasi parameter
+  if (!phone || !message || !message.text || !message.otp) {
+  return res.status(400).json({
+    status: false,
+    result: 'Required parameters are missing.'
+  });
+}
+
+  // Format nomor telepon
+  phone = formatPhoneNumber(phone);
+  //phone = phone+'@s.whatsapp.net'
+  //console.log('phone :',phone)
+  try {
+    // Kirim pesan melalui sock
+     await sock.sendButton(phone, message.text, [{
+        "name": "cta_copy",
+        "buttonParamsJson": `{
+        display_text: "Copy code",
+        id: "${randomNumber(6)}",
+        copy_code: "${message.otp}"
+        }`
+    }], message.footer? message.footer : footer, {}).then(response=>{
+      res.status(200).json({
+      status: true,
+      result: 'Message Sent Successfully',
+      logs: response
+    });
+    }).catch( er =>{
+      res.status(500).json({
+      status: false,
+      result: 'Error Sending with button copy',
+      detail: {
+        message: er.message || 'Unknown error',
+        stack: er.stack || 'No stack trace available',
+      }
+    });
+    })
+    
+  } catch (e) {
+    // Log error ke console untuk debugging
+    console.error("Error sending message:", e);
+
+    // Kirim detail error ke response
+    res.status(500).json({
+      status: false,
+      result: 'Internal Server Error',
+      detail: {
+        message: e.message || 'Unknown error',
+        stack: e.stack || 'No stack trace available',
+      }
+    });
+  }
+});
+app.post('/sendMessage/url', async (req, res) => {
+  let { phone, message } = req.body;
+  // Validasi koneksi sock
+  if (!sock) {
+    return res.status(500).json({
+      status: false,
+      result: "Bot Server Belum Terhubung Ke WhatsApp"
+    });
+  }
+  // Validasi parameter
+  if (!phone || !message || !message.text || !message.url) {
+  return res.status(400).json({
+    status: false,
+    result: 'Required parameters are missing.'
+  });
+}
+
+  // Format nomor telepon
+  phone = formatPhoneNumber(phone);
+  //phone = phone+'@s.whatsapp.net'
+  //console.log('phone :',phone)
+  try {
+    // Kirim pesan melalui sock
+    if(!message.image){
+     await sock.sendButton(phone, message.text, [{
+        "name": "cta_url",
+        "buttonParamsJson": `{
+        display_text: "Preview",
+        url: "${message.url}",
+        merchant: "${message.url}"
+        }`
+    }], message.footer? message.footer : footer, {}).then(response=>{
+      res.status(200).json({
+      status: true,
+      result: 'Message Sent Successfully',
+      logs: response
+    });
+    }).catch( er =>{
+      res.status(500).json({
+      status: false,
+      result: 'Error Sending with button url',
+      detail: {
+        message: er.message || 'Unknown error',
+        stack: er.stack || 'No stack trace available',
+      }
+    });
+    })
+    }else{
+     await sock.sendButton(phone, message.text, [{
+        "name": "cta_url",
+        "buttonParamsJson": `{
+        display_text: "Preview",
+        url: "${message.url}",
+        merchant: "${message.url}"
+        }`
+    }], footer, {header: "Ini header silakan di cek", thumbnail: message.image}).then(response=>{
+      res.status(200).json({
+      status: true,
+      result: 'Message Sent Successfully',
+      logs: response
+    });
+    }).catch( er =>{
+      res.status(500).json({
+      status: false,
+      result: 'Error Sending with button url image',
+      detail: {
+        message: er.message || 'Unknown error',
+        stack: er.stack || 'No stack trace available',
+      }
+    });
+    }) 
+    }
+    
+  } catch (e) {
+    // Log error ke console untuk debugging
+    console.error("Error sending message:", e);
+
+    // Kirim detail error ke response
+    res.status(500).json({
+      status: false,
+      result: 'Internal Server Error',
+      detail: {
+        message: e.message || 'Unknown error',
+        stack: e.stack || 'No stack trace available',
+      }
+    });
+  }
+});
+// app.post('/url', async (req, res) => {
+//   let { phone, message } = req.body;
+//   // Validasi koneksi sock
+//   if (!sock) {
+//     return res.status(500).json({
+//       status: false,
+//       result: "Bot Server Belum Terhubung Ke WhatsApp"
+//     });
+//   }
+//   // Validasi parameter
+//   if (!phone || !message || !message.text || !message.url) {
+//   return res.status(400).json({
+//     status: false,
+//     result: 'Required parameters are missing.'
+//   });
+// }
+
+//   // Format nomor telepon
+//   phone = formatPhoneNumber(phone);
+//   //phone = phone+'@s.whatsapp.net'
+//   //console.log('phone :',phone)
+//   try {
+//     // Kirim pesan melalui sock
+//     await sock.sendButton(phone, message.text, [{
+//         "name": "cta_url",
+//         "buttonParamsJson": `{
+//         display_text: "Preview",
+//         url: "${message.url}",
+//         merchant: "${message.url}"
+//         }`
+//     }], footer, {}).then(response=>{
+//       res.status(200).json({
+//       status: true,
+//       result: 'Message Sent Successfully',
+//       logs: response
+//     });
+//     }).catch( er =>{
+//       res.status(500).json({
+//       status: false,
+//       result: 'Error Sending with button url image',
+//       detail: {
+//         message: er.message || 'Unknown error',
+//         stack: er.stack || 'No stack trace available',
+//       }
+//     });
+//     })
+    
+//   } catch (e) {
+//     // Log error ke console untuk debugging
+//     console.error("Error sending message:", e);
+
+//     // Kirim detail error ke response
+//     res.status(500).json({
+//       status: false,
+//       result: 'Internal Server Error',
+//       detail: {
+//         message: e.message || 'Unknown error',
+//         stack: e.stack || 'No stack trace available',
+//       }
+//     });
+//   }
+// });
 app.use((req, res, next) => {
   res.status(404).json({ message: "Route tidak ditemukan" });
   //req.sock = sock;
@@ -666,5 +768,5 @@ app.listen(PORT, () => {
   console.clear();
   console.log(banner);
   console.log(centerText(`[ http://localhost:${PORT} ]\n`));
-  //console.log('Server time:', new Date().toISOString());
+  console.log('Server time:', new Date().toISOString());
 });
