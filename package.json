@@ -5,7 +5,7 @@
   "main": "bot.js",
   "type": "commonjs",
   "scripts": {
-  "postinstall": "npm ci --cache .npm",
+  "postinstall": "npm ci --omit=dev",
     "start": "node bot.js"
   },
   "author": "base",
