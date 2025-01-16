@@ -5,10 +5,9 @@
   "main": "bot.js",
   "type": "commonjs",
   "scripts": {
-  "postinstall": "npm ci --omit=dev",
-    "start": "node bot.js"
+   "start": "node bot.js"
   },
-  "author": "base",
+  "author": "Trio Sihon Luter",
   "license": "MIT",
   "dependencies": {
     "@hapi/boom": "^10.0.1",
@@ -23,9 +22,6 @@
     "path": "^0.12.7",
     "pino": "^7.0.5",
     "readline": "^1.3.0"
-  },
-  "directories": {
-    "lib": "lib"
   },
   "keywords": []
 }
