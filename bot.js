@@ -745,5 +745,5 @@ app.listen(PORT, () => {
   console.clear();
   console.log(banner);
   console.log(centerText(`[ http://localhost:${PORT} ]\n`));
-  
+  console.log('Server time:', new Date().toISOString());
 });
